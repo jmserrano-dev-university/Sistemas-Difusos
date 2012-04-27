@@ -50,9 +50,12 @@ public class IOFicheros {
             Variable v = new Variable();
             
            while(_sc.hasNext("Etiqueta")){
-               Tripleta t = new Tripleta();
+               String token = _sc.nextLine();
+               String etiqueta = token.substring(token.indexOf("E") + 9, token.indexOf(":"));
                
-                String token = _sc.nextLine();
+               Tripleta t = new Tripleta(etiqueta);
+               
+                
                 token = token.replace('(', ',');
                 token = token.replace(')', ',');
                 String[] num = token.split(",");
@@ -97,7 +100,8 @@ public class IOFicheros {
                 
                 //Realizamos una búsqueda para ver si existe dichas variables
                 //sino existen ERROR en la base de reglas
-                if(listaVarables.get(j).existeTripleta(t)!= null){
+                t = listaVarables.get(j).existeTripleta(t);
+                if(t != null){
                     r.anadirTripleta(t);
                 }else{
                     System.err.println("ERROR: La base de reglas no coincide con la Base de datos");

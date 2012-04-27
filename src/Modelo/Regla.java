@@ -35,6 +35,10 @@ public class Regla {
         }
     }
     
+    public int numTripletasRegla(){
+        return _numElementos;
+    }
+    
     public void out(){
         for(int i = 0; i < _regla.size(); i++)
             leerParteRegla(i).out();

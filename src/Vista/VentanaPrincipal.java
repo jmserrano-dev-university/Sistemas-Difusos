@@ -8,17 +8,15 @@ package Vista;
 import Modelo.IOFicheros;
 import Modelo.Regla;
 import Modelo.Variable;
-import java.awt.*;
-import java.awt.geom.AffineTransform;
-import java.awt.geom.Rectangle2D;
-import java.awt.image.ColorModel;
+import java.awt.ComponentOrientation;
+import java.awt.Dimension;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -57,16 +55,18 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jScrollPane4 = new javax.swing.JScrollPane();
         jSplitPane2 = new javax.swing.JSplitPane();
         jSplitPane3 = new javax.swing.JSplitPane();
         jPanel2 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         taLog = new javax.swing.JTextArea();
-        jTabbedPane1 = new javax.swing.JTabbedPane();
+        Resultados = new javax.swing.JTabbedPane();
         jScrollPane2 = new javax.swing.JScrollPane();
         pBaseDatos = new javax.swing.JPanel();
         jScrollPane3 = new javax.swing.JScrollPane();
         pBaseReglas = new javax.swing.JLayeredPane();
+        pResultados = new javax.swing.JScrollPane();
         jPanel3 = new javax.swing.JPanel();
         mbBarraMenu = new javax.swing.JMenuBar();
         mArchivo = new javax.swing.JMenu();
@@ -127,13 +127,14 @@ public class VentanaPrincipal extends javax.swing.JFrame {
 
         jScrollPane2.setViewportView(pBaseDatos);
 
-        jTabbedPane1.addTab("Base de datos", jScrollPane2);
+        Resultados.addTab("Base de datos", jScrollPane2);
 
         jScrollPane3.setViewportView(pBaseReglas);
 
-        jTabbedPane1.addTab("Base de Reglas", jScrollPane3);
+        Resultados.addTab("Base de Reglas", jScrollPane3);
+        Resultados.addTab("Resultados", pResultados);
 
-        jSplitPane3.setLeftComponent(jTabbedPane1);
+        jSplitPane3.setLeftComponent(Resultados);
 
         jSplitPane2.setBottomComponent(jSplitPane3);
 
@@ -244,9 +245,9 @@ public class VentanaPrincipal extends javax.swing.JFrame {
             for(int i = 0; i < _baseDatos.size(); i++){
                 _baseDatos.get(i).out();
                 System.out.println("\n******************************\n");
-            }
 
-           taLog.append("Base de reglas: Leida\n");
+           taLog.append("Base de reglas: Leida\n");            }
+
            System.out.println("Base de reglas");
             _baseReglas = _ficheroReglas.leerReglas(_baseDatos);
             for(int i = 0; i < _baseReglas.size(); i++){
@@ -255,6 +256,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
             }
             
             dibujarVariablesBD();
+            dibujarReglas();
         }
     }//GEN-LAST:event_miAbrirBDActionPerformed
 
@@ -309,14 +311,15 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         });
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JTabbedPane Resultados;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
+    private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JSplitPane jSplitPane2;
     private javax.swing.JSplitPane jSplitPane3;
-    private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JMenu mAcercaDe;
     private javax.swing.JMenu mArchivo;
     private javax.swing.JMenu mEdicion;
@@ -326,6 +329,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     private javax.swing.JMenuItem miSalir;
     private javax.swing.JPanel pBaseDatos;
     private javax.swing.JLayeredPane pBaseReglas;
+    private javax.swing.JScrollPane pResultados;
     private javax.swing.JTextArea taLog;
     // End of variables declaration//GEN-END:variables
     
@@ -363,8 +367,16 @@ public class VentanaPrincipal extends javax.swing.JFrame {
                 dataset.addSeries(serie);
             }
             //Guardamos los gráficos
-            JFreeChart grafico = ChartFactory.createXYLineChart("Variable " + i, "", "", dataset, PlotOrientation.VERTICAL, true, true, false);
-            _listaGraficosVariables.add(grafico);
+            
+            if(i == _baseDatos.size() - 1){
+                JFreeChart grafico = ChartFactory.createXYLineChart("Y ", "", "", dataset, PlotOrientation.VERTICAL, true, true, false);
+                _listaGraficosVariables.add(grafico);
+            }else{
+                JFreeChart grafico = ChartFactory.createXYLineChart("X " + (i + 1), "", "", dataset, PlotOrientation.VERTICAL, true, true, false);
+                _listaGraficosVariables.add(grafico);
+            }
+            
+            
             
         }
         
@@ -377,7 +389,24 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     }
     
     private void dibujarReglas(){
-        
+        pBaseReglas.removeAll();
+        for(int i = 0; i < _baseReglas.size(); i++){
+            int num = _baseReglas.get(i).numTripletasRegla();
+            String regla = "R" + (i+1) + ": ";
+            int contador = 1;
+            
+            for(int j = 0; j < num; j++){
+                if(j == num -1){ //resultado de la regla
+                    regla = regla.substring(0, regla.length()-2);
+                    regla = regla + " entonces Y es " + _baseReglas.get(i).leerParteRegla(j).getNombreEtiqueta();
+                }else{ //Si de la regla
+                    regla = regla + "Si X"+ contador + " es " + _baseReglas.get(i).leerParteRegla(j).getNombreEtiqueta() + " y ";
+                }
+                contador++;
+            }
+            JLabel r = new JLabel(regla);
+            pBaseReglas.add(r);
+        }
     }
     
     private void confirmacionSalida(){

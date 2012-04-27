@@ -13,6 +13,7 @@ public class Tripleta {
     private List<Float> _listaTripleta;
     private int _numElementos;
     private float _gradoPertenencia;
+    private String _etiqueta;
     
     
     //****************************** MÉTODOS
@@ -21,6 +22,14 @@ public class Tripleta {
         _listaTripleta = new ArrayList<Float>();
         _numElementos = 0;
         _gradoPertenencia = 0;
+        _etiqueta = "";
+    }
+    
+    public Tripleta(String etiqueta) {
+        _listaTripleta = new ArrayList<Float>();
+        _numElementos = 0;
+        _gradoPertenencia = 0;
+        _etiqueta = etiqueta;
     }
     
     public int getNumElementos(){
@@ -50,6 +59,10 @@ public class Tripleta {
     
     public float getRangoSuperior(){
         return _listaTripleta.get(_listaTripleta.size() - 1);
+    }
+    
+    public String getNombreEtiqueta(){
+        return _etiqueta;
     }
     
     public boolean dentroRango(float valor){
