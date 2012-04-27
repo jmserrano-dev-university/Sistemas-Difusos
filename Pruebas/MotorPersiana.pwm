@@ -1,0 +1,21 @@
+Base de Datos inicial: 
+
+  Variable Luminosidad:
+    Etiqueta Deficiente: (0,0,5,25)
+    Etiqueta Media: (5,25,45)
+    Etiqueta Alta: (25,45,50,50)
+
+  Variable Nivel de persiana:
+    Etiqueta Alta: (0,0,20,50)
+    Etiqueta Media: (20,40,60,80)
+    Etiqueta Baja: (50,80,100,100)
+  
+  Variable Motor:
+    Etiqueta Fuerte abajo: (-100,-100,-80,-60)
+    Etiqueta Media abajo: (-80,-60,-20)
+    Etiqueta Poco abajo: (-40,-20,0)
+    Etiqueta Cero: (-20,0,20)
+    Etiqueta Poco arriba: (0,20,40)
+    Etiqueta Media arriba: (20,60,80)
+    Etiqueta Fuerte arriba: (60,80,100,100)
+	
