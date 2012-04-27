@@ -61,6 +61,16 @@ public class Tripleta {
         return _listaTripleta.get(_listaTripleta.size() - 1);
     }
     
+    public float[] getValorIntermedio(){
+        if(esTriangulo()){
+            float[] valores = {_listaTripleta.get(1)};
+            return valores;
+        }else{
+            float[] valores = {_listaTripleta.get(1), _listaTripleta.get(2)};
+            return valores;
+        }
+    }
+    
     public String getNombreEtiqueta(){
         return _etiqueta;
     }
@@ -85,6 +95,24 @@ public class Tripleta {
         }
         return true;
     }
+    
+    public void gradoPertenencia(float valor){
+        if(valor >= getRangoInferior() && valor <= getRangoSuperior()){
+           _gradoPertenencia = ( _listaTripleta.get(_numElementos - 1) - valor) / (_listaTripleta.get(_numElementos - 1) - _listaTripleta.get(0) ); 
+        }else{
+            _gradoPertenencia = 0;
+        }
+        
+    }
+    
+    public boolean esTriangulo(){    
+        if(_numElementos == 3){
+            return true;
+        }else{
+            return false;
+        }
+    }
+    
     
     public void out(){
         for(int i = 0; i < _listaTripleta.size(); i++)

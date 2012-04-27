@@ -5,21 +5,39 @@
 
 package Modelo;
 
+import java.util.List;
 
 public class Operador {
-    public static float TnormaMIN(float a, float b){
-        return Math.min(a, b);
+    static final int TNORMAMIN = 1;
+    static final int TNORMAPROD = 2;
+    static final int TCONORMAMAX = 3;
+    static final int TCONORMASUMAALG = 4;
+    
+    public static float TnormaMIN(List<Float> valores){
+        float v = valores.get(0);
+        for(int i = 1; i < valores.size(); i++){
+            v = Math.min(v,valores.get(i));
+        }
+        return v;
     }
     
-    public static float TnormaPROD(float a, float b){
-        return a * b;
+    public static float TnormaPROD(List<Float> valores){
+        float v = valores.get(0);
+        for(int i = 1; i < valores.size(); i++){
+            v = v * valores.get(i);
+        }
+        return v;
     }
     
-    public static float TConormaMAX(float a, float b){
-        return Math.max(a, b);
+    public static float TConormaMAX(List<Float> valores){
+        float v = valores.get(0);
+        for(int i = 1; i < valores.size(); i++){
+            v = Math.max(v,valores.get(i));
+        }
+        return v;
     }
     
-    public static float TconormaSUMALG(float a, float b){
-        return a + b - a * b;
+    public static float TconormaSUMALG(List <Float> valores){
+        return 0; //a + b - a * b;
     }
 }

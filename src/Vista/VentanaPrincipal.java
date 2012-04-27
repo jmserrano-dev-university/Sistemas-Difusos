@@ -6,10 +6,12 @@
 package Vista;
 
 import Modelo.IOFicheros;
+import Modelo.InferenciaMamdani;
 import Modelo.Regla;
 import Modelo.Variable;
-import java.awt.ComponentOrientation;
 import java.awt.Dimension;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,10 +35,9 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         initComponents();
         
         //Inicialización de las variables
-        _baseDatos = new ArrayList<Variable>();
-        _baseReglas = new ArrayList<Regla>();
         _listaGraficosVariables = new ArrayList<JFreeChart>();
         _listaGraficosReglas = new ArrayList<JFreeChart>();
+        _mamdani = new InferenciaMamdani();
         
         //Icono
         this.setIconImage(new ImageIcon(getClass().getResource("")).getImage());
@@ -44,6 +45,24 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         //Ponemos gestores de distribución
         pBaseDatos.setLayout(new javax.swing.BoxLayout(pBaseDatos,javax.swing.BoxLayout.Y_AXIS));
         pBaseReglas.setLayout(new javax.swing.BoxLayout(pBaseReglas,javax.swing.BoxLayout.Y_AXIS));
+        
+        //Añadimos evento de resize
+        
+        this.addComponentListener(new ComponentAdapter() {
+        
+            @Override
+            public void componentResized(ComponentEvent e) {
+                pBaseDatos.removeAll();
+                for(int i = 0; i < _listaGraficosVariables.size();i++){    
+                    ChartPanel panel = new ChartPanel(_listaGraficosVariables.get(i));
+                    Dimension d = new Dimension(pBaseDatos.getWidth()-200,pBaseDatos.getHeight()-200);
+                    panel.setMinimumSize(d);
+                    panel.setMaximumSize(d);
+                    pBaseDatos.add(panel);
+                }
+            }
+        }
+        );
     }
 
     /**
@@ -56,6 +75,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     private void initComponents() {
 
         jScrollPane4 = new javax.swing.JScrollPane();
+        jPanel1 = new javax.swing.JPanel();
         jSplitPane2 = new javax.swing.JSplitPane();
         jSplitPane3 = new javax.swing.JSplitPane();
         jPanel2 = new javax.swing.JPanel();
@@ -67,7 +87,12 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         jScrollPane3 = new javax.swing.JScrollPane();
         pBaseReglas = new javax.swing.JLayeredPane();
         pResultados = new javax.swing.JScrollPane();
-        jPanel3 = new javax.swing.JPanel();
+        pResult = new javax.swing.JPanel();
+        jScrollPane5 = new javax.swing.JScrollPane();
+        pVar = new javax.swing.JPanel();
+        var1 = new javax.swing.JTextField();
+        var2 = new javax.swing.JTextField();
+        bCalcular = new javax.swing.JButton();
         mbBarraMenu = new javax.swing.JMenuBar();
         mArchivo = new javax.swing.JMenu();
         miAbrirBD = new javax.swing.JMenuItem();
@@ -75,6 +100,17 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         mEdicion = new javax.swing.JMenu();
         mAcercaDe = new javax.swing.JMenu();
         miAcercaDe = new javax.swing.JMenuItem();
+
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 100, Short.MAX_VALUE)
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 100, Short.MAX_VALUE)
+        );
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Sistemas Difusos - Mamdani");
@@ -118,7 +154,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         pBaseDatos.setLayout(pBaseDatosLayout);
         pBaseDatosLayout.setHorizontalGroup(
             pBaseDatosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 589, Short.MAX_VALUE)
+            .addGap(0, 738, Short.MAX_VALUE)
         );
         pBaseDatosLayout.setVerticalGroup(
             pBaseDatosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -132,24 +168,57 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         jScrollPane3.setViewportView(pBaseReglas);
 
         Resultados.addTab("Base de Reglas", jScrollPane3);
+
+        javax.swing.GroupLayout pResultLayout = new javax.swing.GroupLayout(pResult);
+        pResult.setLayout(pResultLayout);
+        pResultLayout.setHorizontalGroup(
+            pResultLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 715, Short.MAX_VALUE)
+        );
+        pResultLayout.setVerticalGroup(
+            pResultLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 319, Short.MAX_VALUE)
+        );
+
+        pResultados.setViewportView(pResult);
+
         Resultados.addTab("Resultados", pResultados);
 
         jSplitPane3.setLeftComponent(Resultados);
 
         jSplitPane2.setBottomComponent(jSplitPane3);
 
-        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
-        jPanel3.setLayout(jPanel3Layout);
-        jPanel3Layout.setHorizontalGroup(
-            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 149, Short.MAX_VALUE)
+        jScrollPane5.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+
+        bCalcular.setText("Calcular");
+
+        javax.swing.GroupLayout pVarLayout = new javax.swing.GroupLayout(pVar);
+        pVar.setLayout(pVarLayout);
+        pVarLayout.setHorizontalGroup(
+            pVarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pVarLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(pVarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(var2)
+                    .addComponent(var1)
+                    .addComponent(bCalcular, javax.swing.GroupLayout.DEFAULT_SIZE, 127, Short.MAX_VALUE))
+                .addContainerGap())
         );
-        jPanel3Layout.setVerticalGroup(
-            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 465, Short.MAX_VALUE)
+        pVarLayout.setVerticalGroup(
+            pVarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pVarLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(var1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(var2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 360, Short.MAX_VALUE)
+                .addComponent(bCalcular)
+                .addContainerGap())
         );
 
-        jSplitPane2.setLeftComponent(jPanel3);
+        jScrollPane5.setViewportView(pVar);
+
+        jSplitPane2.setLeftComponent(jScrollPane5);
 
         mArchivo.setText("Archivo");
 
@@ -194,7 +263,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jSplitPane2)
+                .addComponent(jSplitPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 754, Short.MAX_VALUE)
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -241,22 +310,26 @@ public class VentanaPrincipal extends javax.swing.JFrame {
 
             taLog.setText("Base de datos: Leida\n");
             System.out.println("Base de datos");
-            _baseDatos = _ficheroBD.leerBaseDatos();
-            for(int i = 0; i < _baseDatos.size(); i++){
-                _baseDatos.get(i).out();
+            _mamdani._baseDatos = _ficheroBD.leerBaseDatos();
+            for(int i = 0; i < _mamdani._baseDatos.size(); i++){
+                _mamdani._baseDatos.get(i).out();
                 System.out.println("\n******************************\n");
 
            taLog.append("Base de reglas: Leida\n");            }
 
            System.out.println("Base de reglas");
-            _baseReglas = _ficheroReglas.leerReglas(_baseDatos);
-            for(int i = 0; i < _baseReglas.size(); i++){
-                _baseReglas.get(i).out();
+            _mamdani._baseReglas = _ficheroReglas.leerReglas(_mamdani._baseDatos);
+            for(int i = 0; i < _mamdani._baseReglas.size(); i++){
+                _mamdani._baseReglas.get(i).out();
                 System.out.println("\n******************************\n");
             }
             
+
             dibujarVariablesBD();
             dibujarReglas();
+            //anadirCuadrosVariables();
+            
+            pBaseDatos.updateUI();
         }
     }//GEN-LAST:event_miAbrirBDActionPerformed
 
@@ -312,12 +385,14 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTabbedPane Resultados;
+    private javax.swing.JButton bCalcular;
+    private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
-    private javax.swing.JPanel jPanel3;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
+    private javax.swing.JScrollPane jScrollPane5;
     private javax.swing.JSplitPane jSplitPane2;
     private javax.swing.JSplitPane jSplitPane3;
     private javax.swing.JMenu mAcercaDe;
@@ -329,14 +404,17 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     private javax.swing.JMenuItem miSalir;
     private javax.swing.JPanel pBaseDatos;
     private javax.swing.JLayeredPane pBaseReglas;
+    private javax.swing.JPanel pResult;
     private javax.swing.JScrollPane pResultados;
+    private javax.swing.JPanel pVar;
     private javax.swing.JTextArea taLog;
+    private javax.swing.JTextField var1;
+    private javax.swing.JTextField var2;
     // End of variables declaration//GEN-END:variables
     
     
     //************* VARIABLES
-    private List<Variable> _baseDatos;
-    private List<Regla> _baseReglas;
+    InferenciaMamdani _mamdani;
     private String _rutaFicheroBD;
     private String _rutaFicheroReglas;
     List<JFreeChart> _listaGraficosVariables;
@@ -346,12 +424,12 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     private void dibujarVariablesBD(){
         _listaGraficosVariables.clear();
         pBaseDatos.removeAll();
-        for(int i = 0; i < _baseDatos.size(); i++){
+        for(int i = 0; i < _mamdani._baseDatos.size(); i++){
             int j = 0;
             XYSeriesCollection dataset = new XYSeriesCollection();
-            while(j < _baseDatos.get(i).getNumeroTripletas()){
+            while(j < _mamdani._baseDatos.get(i).getNumeroTripletas()){
                 XYSeries serie = new XYSeries("Variable " + i + " | " + j);
-                List<Float> elementosTripleta = _baseDatos.get(i).getSiguienteTripleta().leerElementosTripleta();
+                List<Float> elementosTripleta = _mamdani._baseDatos.get(i).getSiguienteTripleta().leerElementosTripleta();
 
                 if(elementosTripleta.size() == 3){
                     serie.add((double)elementosTripleta.get(0),0);
@@ -368,7 +446,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
             }
             //Guardamos los gráficos
             
-            if(i == _baseDatos.size() - 1){
+            if(i == _mamdani._baseDatos.size() - 1){
                 JFreeChart grafico = ChartFactory.createXYLineChart("Y ", "", "", dataset, PlotOrientation.VERTICAL, true, true, false);
                 _listaGraficosVariables.add(grafico);
             }else{
@@ -390,17 +468,17 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     
     private void dibujarReglas(){
         pBaseReglas.removeAll();
-        for(int i = 0; i < _baseReglas.size(); i++){
-            int num = _baseReglas.get(i).numTripletasRegla();
+        for(int i = 0; i < _mamdani._baseReglas.size(); i++){
+            int num = _mamdani._baseReglas.get(i).numTripletasRegla();
             String regla = "R" + (i+1) + ": ";
             int contador = 1;
             
             for(int j = 0; j < num; j++){
                 if(j == num -1){ //resultado de la regla
                     regla = regla.substring(0, regla.length()-2);
-                    regla = regla + " entonces Y es " + _baseReglas.get(i).leerParteRegla(j).getNombreEtiqueta();
+                    regla = regla + " entonces Y es " + _mamdani._baseReglas.get(i).leerParteRegla(j).getNombreEtiqueta();
                 }else{ //Si de la regla
-                    regla = regla + "Si X"+ contador + " es " + _baseReglas.get(i).leerParteRegla(j).getNombreEtiqueta() + " y ";
+                    regla = regla + "Si X"+ contador + " es " + _mamdani._baseReglas.get(i).leerParteRegla(j).getNombreEtiqueta() + " y ";
                 }
                 contador++;
             }
@@ -415,5 +493,11 @@ public class VentanaPrincipal extends javax.swing.JFrame {
             System.exit(0);
         }
     }
-
+    
+    private void anadirCuadrosVariables(){
+        for(int i = 0; i < _mamdani._baseDatos.size() - 1; i++){
+            //JLabel etiq = new JLabel("HOLA");
+            //pBaseReglas.add(etiq);
+        }
+    }
 }

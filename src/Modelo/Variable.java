@@ -32,6 +32,7 @@ public class Variable {
         if(_iterador < _numTripletas){
             return _listaTripletas.get(_iterador++);
         }else{
+            _iterador = 0;
             return null;
         }
         
