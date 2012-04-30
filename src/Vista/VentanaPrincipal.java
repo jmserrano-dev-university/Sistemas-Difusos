@@ -5,13 +5,11 @@
 
 package Vista;
 
+import Modelo.Defusificador;
 import Modelo.IOFicheros;
 import Modelo.InferenciaMamdani;
-import Modelo.Regla;
-import Modelo.Variable;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
@@ -43,6 +41,10 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         _listaVariablesEntrada = new ArrayList<MiJTextField>();
         _listaValoresEntradas = new ArrayList<Float>();
         _mamdani = new InferenciaMamdani();
+        _defusificacion = new Defusificador(_mamdani);
+        _resultadosCorrectos = false;
+        _operadorUtilizado = 1;
+        
         panelVariables.setLayout(new GridLayout(15, 1));
         
         //Icono
@@ -97,7 +99,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         jPanel5 = new javax.swing.JPanel();
         jPanel6 = new javax.swing.JPanel();
         jButton1 = new javax.swing.JButton();
-        jTextField1 = new javax.swing.JTextField();
+        jtResultado = new javax.swing.JTextField();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         jcOperador = new javax.swing.JComboBox();
@@ -152,7 +154,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 118, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 173, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -209,13 +211,18 @@ public class VentanaPrincipal extends javax.swing.JFrame {
             }
         });
 
-        jTextField1.setEditable(false);
+        jtResultado.setEditable(false);
 
         jLabel1.setText("Resultado");
 
         jLabel2.setText("Operador");
 
         jcOperador.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Min", "Max", "Producto", "Suma algebraica" }));
+        jcOperador.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                jcOperadorItemStateChanged(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
         jPanel6.setLayout(jPanel6Layout);
@@ -225,13 +232,13 @@ public class VentanaPrincipal extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jTextField1)
+                    .addComponent(jtResultado)
                     .addGroup(jPanel6Layout.createSequentialGroup()
                         .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel1)
                             .addComponent(jLabel2))
                         .addGap(0, 0, Short.MAX_VALUE))
-                    .addComponent(jcOperador, 0, 105, Short.MAX_VALUE))
+                    .addComponent(jcOperador, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         jPanel6Layout.setVerticalGroup(
@@ -240,7 +247,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
                 .addContainerGap()
                 .addComponent(jLabel1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jtResultado, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jLabel2)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -282,7 +289,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel5Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane5, javax.swing.GroupLayout.DEFAULT_SIZE, 339, Short.MAX_VALUE)
+                .addComponent(jScrollPane5)
                 .addGap(18, 18, 18)
                 .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
@@ -394,9 +401,19 @@ public class VentanaPrincipal extends javax.swing.JFrame {
                 System.out.println("\n******************************\n");
             }
             
-
+            //Limpiarmos panle de variables
+            panelVariables.removeAll();
+            _listaVariablesEntrada.clear();
+            
             dibujarVariablesBD();
-            dibujarReglas();
+            
+            if(jcOperador.getSelectedIndex() == 0 || jcOperador.getSelectedIndex() == 2){
+                dibujarReglas(true);
+            }else{
+                dibujarReglas(false);
+            }
+            
+            
             anadirCuadrosVariables();
             
             pBaseDatos.updateUI();
@@ -414,7 +431,11 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         //Captamos las variables
         _listaValoresEntradas.clear(); //Limpiamos la lista de valores
-        for(int i = 0; i < _listaVariablesEntrada.size(); i++){
+        boolean bandera = true;
+        
+        _resultadosCorrectos = false;
+        
+        for(int i = 0; i < _listaVariablesEntrada.size() && bandera; i++){
             try{
                 float valor = Float.parseFloat(_listaVariablesEntrada.get(i).getText());
                 float rInf = _mamdani._baseDatos.get(i).getRangoInferior();
@@ -422,22 +443,51 @@ public class VentanaPrincipal extends javax.swing.JFrame {
             
                 if(valor < rInf || valor > rSup){
                     taLog.append("** Variable x"+ (i+1) + " fuera de rango ["+ rInf + ", " + rSup + "]\n");
+                    bandera = false;
                 }else{
                     _listaValoresEntradas.add(valor);
                 }
                 
             }catch(Exception e){
                 taLog.append("** Error las variables debe ser reales\n");
+                bandera = false;
                 break;
-            }            
+            }
+        }
+        if(bandera){
+            _resultadosCorrectos = true;
         }
         
-        //Hacemos los calculos mamdani y defusificación
-        
-        System.out.println("Operador seleccionado: " + jcOperador.getSelectedIndex() + 1);
-        _mamdani.ejecutarMamdani(_listaValoresEntradas,jcOperador.getSelectedIndex() + 1);
-        
+        if(_resultadosCorrectos){
+            //Hacemos los calculos mamdani
+            System.out.println("Operador seleccionado: " + jcOperador.getSelectedIndex() + 1);
+            _mamdani.ejecutarMamdani(_listaValoresEntradas,jcOperador.getSelectedIndex() + 1);
+
+            //Hacemos defusificación
+            Float resultado = _defusificacion.ejecutarDefusificacion();
+            jtResultado.setText("");
+            jtResultado.setText(resultado.toString());
+        }
     }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void jcOperadorItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jcOperadorItemStateChanged
+        if(jcOperador.getSelectedIndex() == 0 || jcOperador.getSelectedIndex() == 2){
+            dibujarReglas(true);
+            
+            if(jcOperador.getSelectedIndex() == 0) _operadorUtilizado = 1;
+            if(jcOperador.getSelectedIndex() == 2) _operadorUtilizado = 3;
+            
+        }else{
+            dibujarReglas(false);
+            
+            if(jcOperador.getSelectedIndex() == 1) _operadorUtilizado = 2;
+            if(jcOperador.getSelectedIndex() == 3) _operadorUtilizado = 4;
+        }
+        
+        System.out.println("OPERADOR UTILIZADO es: " + _operadorUtilizado);
+        
+        pBaseReglas.repaint();
+    }//GEN-LAST:event_jcOperadorItemStateChanged
 
     /**
      * @param args the command line arguments
@@ -497,8 +547,8 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane5;
     private javax.swing.JSplitPane jSplitPane2;
     private javax.swing.JSplitPane jSplitPane3;
-    private javax.swing.JTextField jTextField1;
     private javax.swing.JComboBox jcOperador;
+    private javax.swing.JTextField jtResultado;
     private javax.swing.JMenu mAcercaDe;
     private javax.swing.JMenu mArchivo;
     private javax.swing.JMenu mEdicion;
@@ -517,12 +567,15 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     
     //************* VARIABLES
     InferenciaMamdani _mamdani;
+    Defusificador _defusificacion;
     private String _rutaFicheroBD;
     private String _rutaFicheroReglas;
     List<JFreeChart> _listaGraficosVariables;
     List<JFreeChart> _listaGraficosReglas;
     List<Float> _listaValoresEntradas;
     List<MiJTextField> _listaVariablesEntrada;
+    boolean _resultadosCorrectos;
+    int _operadorUtilizado;
     
     //************* MÉTODOS
     private void dibujarVariablesBD(){
@@ -570,8 +623,16 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         }
     }
     
-    private void dibujarReglas(){
+    private void dibujarReglas(boolean isAND){
         pBaseReglas.removeAll();
+        String valor;
+        
+        if(isAND){
+            valor = " and ";
+        }else{
+            valor = " or ";
+        }
+        
         for(int i = 0; i < _mamdani._baseReglas.size(); i++){
             int num = _mamdani._baseReglas.get(i).numTripletasRegla();
             String regla = "R" + (i+1) + ": ";
@@ -582,7 +643,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
                     regla = regla.substring(0, regla.length()-2);
                     regla = regla + " entonces Y es " + _mamdani._baseReglas.get(i).leerParteRegla(j).getNombreEtiqueta();
                 }else{ //Si de la regla
-                    regla = regla + "Si X"+ contador + " es " + _mamdani._baseReglas.get(i).leerParteRegla(j).getNombreEtiqueta() + " y ";
+                    regla = regla + "Si X"+ contador + " es " + _mamdani._baseReglas.get(i).leerParteRegla(j).getNombreEtiqueta() + valor;
                 }
                 contador++;
             }

@@ -59,6 +59,14 @@ public class Regla {
         return _altura;
     }
     
+    public void limpiarPertenencia(){
+        _pertenece = true;
+    }
+    
+    public void limpiarAltura(){
+        _altura = 0;
+    }
+    
     public void out(){
         for(int i = 0; i < _regla.size(); i++)
             leerParteRegla(i).out();

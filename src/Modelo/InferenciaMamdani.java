@@ -20,16 +20,19 @@ public class InferenciaMamdani {
         _reglasDisparadas = new ArrayList<Regla>();
     }
     
-    private void CalcularGradoPertenencia(List<Float> valores){
+    private void calcularGradoPertenencia(List<Float> valores){
         for(int i = 0; i < _baseReglas.size(); i++){
             Regla r = _baseReglas.get(i);
+            System.out.println("REGLA " + (i+1));
             for(int j = 0; j < r.numTripletasRegla() - 1; j++){
                 r.leerParteRegla(j).gradoPertenencia(valores.get(j));
+                System.out.println("PARTE REGLA " + j + " grado: " + r.leerParteRegla(j).getGradoPertenencia());
             }
         }
     }
     
-    private void CalcularPertenenciaReglas(){
+    private void calcularPertenenciaReglas(){
+        System.out.println("REGLAS DISPARADAS");
         for(int i = 0; i < _baseReglas.size(); i++){
             Regla r = _baseReglas.get(i);
             for(int j = 0; j < r.numTripletasRegla() - 1; j++){
@@ -39,11 +42,13 @@ public class InferenciaMamdani {
             }
             if(r.getPertenencia()){
                 _reglasDisparadas.add(r);
+                System.out.println("REGLA " + (i+1) + " disparada");
             }
         }
     }
     
-    private void CalcularAlturas(int operacion){
+    private void calcularAlturas(int operacion){
+        System.out.println("CALCULO DE ALTURAS -> OPERACIÓN: " + operacion);
         for(int i = 0; i < _baseReglas.size(); i++){
             Regla r = _baseReglas.get(i);
             List<Float> valores = new ArrayList<Float>();
@@ -69,13 +74,26 @@ public class InferenciaMamdani {
 //                        r.anadirAltura(Operador.TconormaSUMALG(valores));
 //                    break;
                 }
+                System.out.println("REGLA " + (i + 1) + " " + r.getAltura());
+            }
+        }
+    }
+    
+    private void limpiarSistema(){
+        for(int i = 0; i < _baseReglas.size(); i++){
+            _baseReglas.get(i).limpiarAltura();
+            _baseReglas.get(i).limpiarPertenencia();
+            for(int j = 0; j < _baseReglas.get(i).numTripletasRegla(); j++){
+                _baseReglas.get(i).leerParteRegla(j).limpiarGradoPertenencia();
             }
         }
     }
     
     public void ejecutarMamdani(List<Float> entradas, int operacion){
-        CalcularGradoPertenencia(entradas);
-        //CalcularPertenenciaReglas();
-        //CalcularAlturas(operacion);
+        limpiarSistema();
+        _reglasDisparadas.clear();
+        calcularGradoPertenencia(entradas);
+        calcularPertenenciaReglas();
+        calcularAlturas(operacion);
     }
 }

@@ -13,12 +13,13 @@ public class Defusificador {
     private InferenciaMamdani _mamdani;
     private List<Float> _resultados;
     
-    public Defusificador() {
-        _mamdani = new InferenciaMamdani();
+    public Defusificador(InferenciaMamdani m) {
+        _mamdani = m;
         _resultados = new ArrayList<Float>();
     }
     
     public float ejecutarDefusificacion(){
+        _resultados.clear();
         for(int i = 0; i < _mamdani._reglasDisparadas.size(); i++){
             Regla r = _mamdani._reglasDisparadas.get(i);
             float A, B, C, D;

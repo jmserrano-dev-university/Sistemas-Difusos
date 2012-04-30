@@ -105,6 +105,10 @@ public class Tripleta {
         
     }
     
+    public void limpiarGradoPertenencia(){
+        _gradoPertenencia = 0;
+    }
+    
     public boolean esTriangulo(){    
         if(_numElementos == 3){
             return true;
