@@ -14,6 +14,8 @@ public class Variable {
     private List<Tripleta> _listaTripletas;
     private int _numTripletas;
     int _iterador;
+    private float _rangoInferior;
+    private float _rangoSuperior;
     
     //****************************** MÉTODOS
 
@@ -21,6 +23,9 @@ public class Variable {
         _listaTripletas = new ArrayList<Tripleta>();
         _numTripletas = 0;
         _iterador = 0;
+        
+        _rangoInferior = 0;
+        _rangoSuperior = 0;
     }
     
     public void anadirTripleta(Tripleta t){
@@ -49,6 +54,14 @@ public class Variable {
     
     public int getNumeroTripletas(){
         return _numTripletas;
+    }
+    
+    public float getRangoInferior(){
+        return _listaTripletas.get(0).getRangoInferior();
+    }
+    
+    public float getRangoSuperior(){
+        return _listaTripletas.get(_listaTripletas.size()-1).getRangoSuperior();
     }
     
     public void out(){

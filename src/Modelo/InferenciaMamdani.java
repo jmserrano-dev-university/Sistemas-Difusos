@@ -75,7 +75,7 @@ public class InferenciaMamdani {
     
     public void ejecutarMamdani(List<Float> entradas, int operacion){
         CalcularGradoPertenencia(entradas);
-        CalcularPertenenciaReglas();
-        CalcularAlturas(operacion);
+        //CalcularPertenenciaReglas();
+        //CalcularAlturas(operacion);
     }
 }
