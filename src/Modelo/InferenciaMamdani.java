@@ -1,6 +1,7 @@
 /**
  * Clase InferenciaMamdani
  * @author José Manuel Serrano Mármol
+ * @author Raul Salazar de Torres
  */
 
 package Modelo;
@@ -31,19 +32,41 @@ public class InferenciaMamdani {
         }
     }
     
-    private void calcularPertenenciaReglas(){
+    private void calcularPertenenciaReglas(int op){
         System.out.println("REGLAS DISPARADAS");
-        for(int i = 0; i < _baseReglas.size(); i++){
-            Regla r = _baseReglas.get(i);
-            for(int j = 0; j < r.numTripletasRegla() - 1; j++){
-                if(r.leerParteRegla(j).getGradoPertenencia() == 0.0){
+        if(op == Operador.TNORMAMIN || op == Operador.TNORMAPROD){ //OPERADOR MIN - PROD
+            for(int i = 0; i < _baseReglas.size(); i++){
+                Regla r = _baseReglas.get(i);
+                for(int j = 0; j < r.numTripletasRegla() - 1; j++){
+                    if(r.leerParteRegla(j).getGradoPertenencia() == 0.0){
+                        r.setPertenecia(false);
+                    }
+                }
+                if(r.getPertenencia()){
+                    _reglasDisparadas.add(r);
+                    System.out.println("REGLA " + (i+1) + " disparada");
+                }
+            }
+        }else{ //OPERADOR MAX - SUM_ALG
+            for(int i = 0; i < _baseReglas.size(); i++){
+                boolean bandera = false;
+                Regla r = _baseReglas.get(i);
+                for(int j = 0; j < r.numTripletasRegla() - 1; j++){
+                    if(r.leerParteRegla(j).getGradoPertenencia() != 0.0){
+                        bandera = true;
+                        break;
+                    }
+                }
+                
+                if(bandera){
+                    r.setPertenecia(true);
+                    _reglasDisparadas.add(r);
+                    System.out.println("REGLA " + (i+1) + " disparada");
+                }else{
                     r.setPertenecia(false);
                 }
             }
-            if(r.getPertenencia()){
-                _reglasDisparadas.add(r);
-                System.out.println("REGLA " + (i+1) + " disparada");
-            }
+                
         }
     }
     
@@ -93,7 +116,7 @@ public class InferenciaMamdani {
         limpiarSistema();
         _reglasDisparadas.clear();
         calcularGradoPertenencia(entradas);
-        calcularPertenenciaReglas();
+        calcularPertenenciaReglas(operacion);
         calcularAlturas(operacion);
     }
 }

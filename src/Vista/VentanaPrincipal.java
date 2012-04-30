@@ -5,9 +5,7 @@
 
 package Vista;
 
-import Modelo.Defusificador;
-import Modelo.IOFicheros;
-import Modelo.InferenciaMamdani;
+import Modelo.*;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridLayout;
@@ -37,7 +35,6 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         
         //Inicialización de las variables
         _listaGraficosVariables = new ArrayList<JFreeChart>();
-        _listaGraficosReglas = new ArrayList<JFreeChart>();
         _listaVariablesEntrada = new ArrayList<MiJTextField>();
         _listaValoresEntradas = new ArrayList<Float>();
         _mamdani = new InferenciaMamdani();
@@ -217,7 +214,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
 
         jLabel2.setText("Operador");
 
-        jcOperador.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Min", "Max", "Producto", "Suma algebraica" }));
+        jcOperador.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Min", "Producto", "Max", "Suma algebraica" }));
         jcOperador.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
                 jcOperadorItemStateChanged(evt);
@@ -471,17 +468,11 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jcOperadorItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jcOperadorItemStateChanged
-        if(jcOperador.getSelectedIndex() == 0 || jcOperador.getSelectedIndex() == 2){
+        _operadorUtilizado = jcOperador.getSelectedIndex() + 1;
+        if(jcOperador.getSelectedIndex() == Operador.TNORMAMIN || jcOperador.getSelectedIndex() == Operador.TNORMAPROD){
             dibujarReglas(true);
-            
-            if(jcOperador.getSelectedIndex() == 0) _operadorUtilizado = 1;
-            if(jcOperador.getSelectedIndex() == 2) _operadorUtilizado = 3;
-            
         }else{
             dibujarReglas(false);
-            
-            if(jcOperador.getSelectedIndex() == 1) _operadorUtilizado = 2;
-            if(jcOperador.getSelectedIndex() == 3) _operadorUtilizado = 4;
         }
         
         System.out.println("OPERADOR UTILIZADO es: " + _operadorUtilizado);
@@ -571,7 +562,6 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     private String _rutaFicheroBD;
     private String _rutaFicheroReglas;
     List<JFreeChart> _listaGraficosVariables;
-    List<JFreeChart> _listaGraficosReglas;
     List<Float> _listaValoresEntradas;
     List<MiJTextField> _listaVariablesEntrada;
     boolean _resultadosCorrectos;
@@ -640,7 +630,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
             
             for(int j = 0; j < num; j++){
                 if(j == num -1){ //resultado de la regla
-                    regla = regla.substring(0, regla.length()-2);
+                    regla = regla.substring(0, regla.length()-4);
                     regla = regla + " entonces Y es " + _mamdani._baseReglas.get(i).leerParteRegla(j).getNombreEtiqueta();
                 }else{ //Si de la regla
                     regla = regla + "Si X"+ contador + " es " + _mamdani._baseReglas.get(i).leerParteRegla(j).getNombreEtiqueta() + valor;
@@ -649,6 +639,41 @@ public class VentanaPrincipal extends javax.swing.JFrame {
             }
             JLabel r = new JLabel(regla);
             pBaseReglas.add(r);
+        }
+    }
+    
+    
+    private void dibujarResulsadosFinales(){
+        
+        for(int i = 0; i < _mamdani._baseReglas.size(); i++){
+            Regla r = _mamdani._baseReglas.get(i);
+            List<JFreeChart> listaGraficos = new ArrayList<JFreeChart>();
+            
+            for(int j = 0; j < r.numTripletasRegla(); j++){
+                Tripleta t = r.leerParteRegla(j);
+                XYSeriesCollection dataset = new XYSeriesCollection();
+                XYSeries serie = new XYSeries("Regla " + i + " Tripleta " + j);
+                List<Float> listaValores = t.leerElementosTripleta();
+                
+                if(listaValores.size() == 3){
+                    serie.add((double)listaValores.get(0),0);
+                    serie.add((double)listaValores.get(1),1);
+                    serie.add((double)listaValores.get(2),0);
+                }else{
+                    serie.add((double)listaValores.get(0),0);
+                    serie.add((double)listaValores.get(1),1);
+                    serie.add((double)listaValores.get(2),0);
+                    serie.add((double)listaValores.get(3),0);
+                }
+                
+                dataset.addSeries(serie);
+                JFreeChart grafico = ChartFactory.createXYLineChart(" ", "", "", dataset, PlotOrientation.VERTICAL, false,false,false);
+                listaGraficos.add(grafico);
+            }
+            
+            //Meter en un panel y agregarlo
+            
+            
         }
     }
     

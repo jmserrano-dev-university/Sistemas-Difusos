@@ -8,10 +8,10 @@ package Modelo;
 import java.util.List;
 
 public class Operador {
-    static final int TNORMAMIN = 1;
-    static final int TNORMAPROD = 2;
-    static final int TCONORMAMAX = 3;
-    static final int TCONORMASUMAALG = 4;
+    public static final int TNORMAMIN = 1;
+    public static final int TNORMAPROD = 2;
+    public static final int TCONORMAMAX = 3;
+    public static final int TCONORMASUMAALG = 4;
     
     public static float TnormaMIN(List<Float> valores){
         float v = valores.get(0);
