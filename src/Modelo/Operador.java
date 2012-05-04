@@ -1,6 +1,7 @@
 /**
  * Clase Operador
  * @author José Manuel Serrano Marmol
+ * @author Raul Salazar de Torres
  */
 
 package Modelo;
@@ -13,6 +14,11 @@ public class Operador {
     public static final int TCONORMAMAX = 3;
     public static final int TCONORMASUMAALG = 4;
     
+    /**
+     * Operador de Tnorma MÍNIMO
+     * @param valores
+     * @return 
+     */
     public static float TnormaMIN(List<Float> valores){
         float v = valores.get(0);
         for(int i = 1; i < valores.size(); i++){
@@ -21,6 +27,11 @@ public class Operador {
         return v;
     }
     
+    /**
+     * Operador de Tnorma PRODUCTO
+     * @param valores
+     * @return 
+     */
     public static float TnormaPROD(List<Float> valores){
         float v = valores.get(0);
         for(int i = 1; i < valores.size(); i++){
@@ -29,6 +40,11 @@ public class Operador {
         return v;
     }
     
+    /**
+     * Operador de TCnorma MÁXIMO
+     * @param valores
+     * @return 
+     */
     public static float TConormaMAX(List<Float> valores){
         float v = valores.get(0);
         for(int i = 1; i < valores.size(); i++){
@@ -37,6 +53,11 @@ public class Operador {
         return v;
     }
     
+    /**
+     * Operador de Tconorma SUMA ALGEBRÁICA
+     * @param valores
+     * @return 
+     */
     public static float TconormaSUMALG(List <Float> valores){
         float aux = valores.get(0);
         for(int i = 1; i < valores.size(); i++){

@@ -1,6 +1,7 @@
 /**
- * Clase Tripleta
+ * Clase Tripleta Representa un triángulo o trapecio de una regla o variable
  * @author José Manuel Serrano Márnol
+ * @author Raul Salazar de Torres
  */
 
 package Modelo;
@@ -9,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Tripleta {
+    
     //****************************** ATRIBUTOS
     private List<Float> _listaTripleta;
     private int _numElementos;
@@ -17,7 +19,10 @@ public class Tripleta {
     
     
     //****************************** MÉTODOS
-
+    
+    /**
+     * Constructor
+     */
     public Tripleta() {
         _listaTripleta = new ArrayList<Float>();
         _numElementos = 0;
@@ -25,6 +30,10 @@ public class Tripleta {
         _etiqueta = "";
     }
     
+    /**
+     * Constructor
+     * @param etiqueta 
+     */
     public Tripleta(String etiqueta) {
         _listaTripleta = new ArrayList<Float>();
         _numElementos = 0;

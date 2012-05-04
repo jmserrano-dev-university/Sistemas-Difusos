@@ -1,6 +1,7 @@
 /**
- * Clase Variable
+ * Clase Variable REpresenta una variable del sistema
  * @author José Manuel Serrano Mármol
+ * @author Raul Salazar de Torres
  */
 
 package Modelo;

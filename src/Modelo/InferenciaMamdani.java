@@ -1,5 +1,5 @@
 /**
- * Clase InferenciaMamdani
+ * Clase InferenciaMamdani Metodo de inferencia de Mamdani
  * @author José Manuel Serrano Mármol
  * @author Raul Salazar de Torres
  */
@@ -15,12 +15,19 @@ public class InferenciaMamdani {
     public List<Regla> _baseReglas;
     public List<Regla> _reglasDisparadas;
 
+    /**
+     * Constructor
+     */
     public InferenciaMamdani() {
         _baseDatos = new ArrayList<Variable>();
         _baseReglas = new ArrayList<Regla>();
         _reglasDisparadas = new ArrayList<Regla>();
     }
     
+    /**
+     * Calcula el grado de pertenencia de las reglas
+     * @param valores 
+     */
     private void calcularGradoPertenencia(List<Float> valores){
         for(int i = 0; i < _baseReglas.size(); i++){
             Regla r = _baseReglas.get(i);
@@ -32,6 +39,10 @@ public class InferenciaMamdani {
         }
     }
     
+    /**
+     * Calcular la pertenencia de las reglas
+     * @param op 
+     */
     private void calcularPertenenciaReglas(int op){
         System.out.println("REGLAS DISPARADAS");
         if(op == Operador.TNORMAMIN || op == Operador.TNORMAPROD){ //OPERADOR MIN - PROD
@@ -70,6 +81,10 @@ public class InferenciaMamdani {
         }
     }
     
+    /**
+     * Calculo de las alturas de los resultados
+     * @param operacion 
+     */
     private void calcularAlturas(int operacion){
         System.out.println("CALCULO DE ALTURAS -> OPERACIÓN: " + operacion);
         for(int i = 0; i < _baseReglas.size(); i++){
@@ -112,6 +127,11 @@ public class InferenciaMamdani {
         }
     }
     
+    /**
+     * Ejecutar el proceso de Mamdani
+     * @param entradas
+     * @param operacion 
+     */
     public void ejecutarMamdani(List<Float> entradas, int operacion){
         limpiarSistema();
         _reglasDisparadas.clear();

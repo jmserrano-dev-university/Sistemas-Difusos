@@ -12,6 +12,7 @@ import java.awt.GridLayout;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.*;
@@ -68,7 +69,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
                     pBaseDatos.add(panel);
                 }
                 if(_resultadosCorrectos){
-                    dibujarResulsadosFinales();
+                    dibujarResultadosFinales();
                 }
                 
             }
@@ -370,6 +371,9 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         archivo.setMultiSelectionEnabled(true);
         int seleccion = archivo.showOpenDialog(this);
         
+        taLog.setText(""); //Borramos el log
+        pResult.removeAll(); //Limpiamos pantalla de resultados
+        
         if(seleccion == JFileChooser.APPROVE_OPTION){
             File[] fichero = archivo.getSelectedFiles();
             if(fichero.length != 2){
@@ -390,17 +394,19 @@ public class VentanaPrincipal extends javax.swing.JFrame {
                 IOFicheros _ficheroBD = new IOFicheros(_rutaFicheroBD);
                 IOFicheros _ficheroReglas = new IOFicheros(_rutaFicheroReglas);
 
-                taLog.setText("Base de datos: Leida\n");
                 System.out.println("Base de datos");
                 _mamdani._baseDatos = _ficheroBD.leerBaseDatos();
                 for(int i = 0; i < _mamdani._baseDatos.size(); i++){
                     _mamdani._baseDatos.get(i).out();
                     System.out.println("\n******************************\n");
-                    taLog.append("Base de reglas: Leida\n");            
                 }
 
                 System.out.println("Base de reglas");
-                _mamdani._baseReglas = _ficheroReglas.leerReglas(_mamdani._baseDatos);
+                try {
+                    _mamdani._baseReglas = _ficheroReglas.leerReglas(_mamdani._baseDatos);
+                } catch (IOException ex) {
+                    taLog.append("Error: La base de datos no coincide con la base de reglas. \n");
+                }
                 for(int i = 0; i < _mamdani._baseReglas.size(); i++){
                     _mamdani._baseReglas.get(i).out();
                     System.out.println("\n******************************\n");
@@ -418,9 +424,11 @@ public class VentanaPrincipal extends javax.swing.JFrame {
                     dibujarReglas(false);
                 }
 
-
                 anadirCuadrosVariables();
-
+                
+                //Información LOG
+                taLog.append("Base de datos: Leida\n");
+                taLog.append("Base de reglas: Leida\n");
                 bCalcular.setEnabled(true);
                 pBaseDatos.updateUI();
             }
@@ -449,14 +457,14 @@ public class VentanaPrincipal extends javax.swing.JFrame {
                 float rSup = _mamdani._baseDatos.get(i).getRangoSuperior();
             
                 if(valor < rInf || valor > rSup){
-                    taLog.append("** Variable x"+ (i+1) + " fuera de rango ["+ rInf + ", " + rSup + "]\n");
+                    taLog.append("** Error: Variable x"+ (i+1) + " fuera de rango ["+ rInf + ", " + rSup + "]\n");
                     bandera = false;
                 }else{
                     _listaValoresEntradas.add(valor);
                 }
                 
             }catch(Exception e){
-                taLog.append("** Error las variables debe ser reales\n");
+                taLog.append("** Error: Las variables debe ser números\n");
                 bandera = false;
                 break;
             }
@@ -476,8 +484,19 @@ public class VentanaPrincipal extends javax.swing.JFrame {
             jtResultado.setText(resultado.toString());
             
             //Dibujamos los resultados
-            dibujarResulsadosFinales();
+            dibujarResultadosFinales();
             Resultados.setSelectedIndex(2);
+            
+            //Informamos en el Log de las reglas disparadas
+            taLog.append("\n*************************************\n");
+            for(int i = 0; i < _mamdani._baseReglas.size(); i++){
+                if(_mamdani._baseReglas.get(i).getPertenencia()){
+                    taLog.append("-REGLA " + (i+1) + ": disparada\n");
+                }else{
+                    taLog.append("-REGLA " + (i+1) + ": NO disparada\n");
+                }
+            }
+            taLog.append("*************************************\n");
         }
     }//GEN-LAST:event_bCalcularActionPerformed
 
@@ -658,7 +677,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     }
     
     
-    private void dibujarResulsadosFinales(){
+    private void dibujarResultadosFinales(){
         pResult.removeAll();
         List<XYSeries> graficoFinal = new ArrayList<XYSeries>();
         

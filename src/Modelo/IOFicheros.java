@@ -1,12 +1,14 @@
 /**
- * Clase IOFicheros que lee ficheros de base de datos y reglas difusas
+ * Clase IOFicheros Lee ficheros de base de datos y reglas difusas
  * @author José Manuel Serrano Mármol
+ * @author Raul Salazar de Torres
  */
 
 package Modelo;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -18,13 +20,11 @@ public class IOFicheros {
     private Scanner _sc;
     
     
-    
-    
     //****************************** MÉTODOS
     
     /**
      * Constructor
-     * @param nombreFichero 
+     * @param nombreFichero Nombre del fichero
      */
     public IOFicheros(String nombreFichero) {
         try {
@@ -36,7 +36,7 @@ public class IOFicheros {
     
     /**
      * Lectura de la base de datos con las variables difusas
-     * @return 
+     * @return Lista de variables
      */
     public List<Variable> leerBaseDatos(){
         List<Variable> baseDatos = new ArrayList<Variable>();
@@ -76,9 +76,10 @@ public class IOFicheros {
     
     /**
      * Lectura de las reglas difusas
-     * @param numVariables 
+     * @param numVariables
+     * @return Lista de reglas
      */
-    public List<Regla> leerReglas(List<Variable> listaVarables){
+    public List<Regla> leerReglas(List<Variable> listaVarables) throws IOException{
         List<Regla> baseReglas = new ArrayList<Regla>();
         
         _sc.next();
@@ -108,6 +109,7 @@ public class IOFicheros {
                     r.anadirTripleta(t);
                 }else{
                     System.err.println("ERROR: La base de reglas no coincide con la Base de datos");
+                    throw new IOException("La base de reglas no coincide con la Base de datos");
                 }
             }
             baseReglas.add(r);

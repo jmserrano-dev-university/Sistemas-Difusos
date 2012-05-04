@@ -1,6 +1,7 @@
 /**
- * Clase Regla
+ * Clase Regla Representa una regla del sistema
  * @author José Manuel Serrano Mármol
+ * @author Raul Salazar de Torres
  */
 
 package Modelo;
@@ -18,7 +19,10 @@ public class Regla {
     private float _altura;
     
     //****************************** MÉTODOS
-
+    
+    /**
+     * Constructor
+     */
     public Regla() {
         _regla = new ArrayList<Tripleta>();
         _numElementos = 0;

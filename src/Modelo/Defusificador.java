@@ -1,6 +1,7 @@
 /**
- * Clase Defusificador
+ * Clase Defusificador Metodo de defusificación del sistema difuso
  * @author José Manuel Serrano Mármol
+ * @author Raul Salazar de Torres
  */
 
 package Modelo;
@@ -13,11 +14,19 @@ public class Defusificador {
     private InferenciaMamdani _mamdani;
     private List<Float> _resultados;
     
+    /**
+     * Constructor
+     * @param m Inferencia de Mamdani
+     */
     public Defusificador(InferenciaMamdani m) {
         _mamdani = m;
         _resultados = new ArrayList<Float>();
     }
     
+    /**
+     * Función para ejecutar la defusificación
+     * @return Valor de defusificación
+     */
     public float ejecutarDefusificacion(){
         _resultados.clear();
         for(int i = 0; i < _mamdani._reglasDisparadas.size(); i++){
