@@ -92,10 +92,10 @@ public class InferenciaMamdani {
                     case Operador.TCONORMAMAX:
                         r.anadirAltura(Operador.TConormaMAX(valores));
                     break;
-//                        
-//                    case Operador.TCONORMASUMAALG:
-//                        r.anadirAltura(Operador.TconormaSUMALG(valores));
-//                    break;
+                        
+                    case Operador.TCONORMASUMAALG:
+                        r.anadirAltura(Operador.TconormaSUMALG(valores));
+                    break;
                 }
                 System.out.println("REGLA " + (i + 1) + " " + r.getAltura());
             }

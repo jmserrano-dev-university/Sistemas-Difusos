@@ -97,9 +97,26 @@ public class Tripleta {
     }
     
     public void gradoPertenencia(float valor){
-        if(valor >= getRangoInferior() && valor <= getRangoSuperior()){
-           _gradoPertenencia = ( _listaTripleta.get(_numElementos - 1) - valor) / (_listaTripleta.get(_numElementos - 1) - _listaTripleta.get(0) ); 
-        }else{
+        if(valor > getRangoInferior() && valor < getRangoSuperior()){ 
+           if(esTriangulo()){//Tringulo
+               if(valor <= _listaTripleta.get(1)){
+                   _gradoPertenencia = (valor - _listaTripleta.get(0)) / (_listaTripleta.get(1) - _listaTripleta.get(0));
+               }else{
+                   _gradoPertenencia = (valor - _listaTripleta.get(1)) / (_listaTripleta.get(2) - _listaTripleta.get(1));
+               }
+               
+           }else{ //Trapecio
+               if(valor < _listaTripleta.get(1)){
+                   _gradoPertenencia = (valor - _listaTripleta.get(0)) / (_listaTripleta.get(1) - _listaTripleta.get(0));
+               }else{
+                   if(valor >_listaTripleta.get(2)){
+                       _gradoPertenencia = (valor - _listaTripleta.get(2)) / (_listaTripleta.get(3) - _listaTripleta.get(2));
+                   }else{ //Está en la parte plana del trapecio
+                       _gradoPertenencia = 1;
+                   }
+               }
+           }
+        }else{ //Sale fuera de rango
             _gradoPertenencia = 0;
         }
         

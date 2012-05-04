@@ -14,14 +14,13 @@ import java.awt.event.ComponentEvent;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import javax.swing.ImageIcon;
-import javax.swing.JFileChooser;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
+import javax.swing.*;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.chart.plot.XYPlot;
+import org.jfree.chart.renderer.xy.XYItemRenderer;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 
@@ -42,14 +41,17 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         _resultadosCorrectos = false;
         _operadorUtilizado = 1;
         
+        this.setLocationRelativeTo(null); //Ponemos la ventana en el centro
+        
         panelVariables.setLayout(new GridLayout(15, 1));
         
         //Icono
-        this.setIconImage(new ImageIcon(getClass().getResource("")).getImage());
+        this.setIconImage(new ImageIcon(getClass().getResource("../Iconos/iconoDifuso.jpeg")).getImage());
         
         //Ponemos gestores de distribución
         pBaseDatos.setLayout(new javax.swing.BoxLayout(pBaseDatos,javax.swing.BoxLayout.Y_AXIS));
         pBaseReglas.setLayout(new javax.swing.BoxLayout(pBaseReglas,javax.swing.BoxLayout.Y_AXIS));
+        pResult.setLayout(new javax.swing.BoxLayout(pResult, javax.swing.BoxLayout.Y_AXIS));
         
         //Añadimos evento de resize
         
@@ -60,11 +62,15 @@ public class VentanaPrincipal extends javax.swing.JFrame {
                 pBaseDatos.removeAll();
                 for(int i = 0; i < _listaGraficosVariables.size();i++){    
                     ChartPanel panel = new ChartPanel(_listaGraficosVariables.get(i));
-                    Dimension d = new Dimension(pBaseDatos.getWidth()-200,pBaseDatos.getHeight()-200);
+                    Dimension d = new Dimension(pBaseDatos.getWidth(),200);
                     panel.setMinimumSize(d);
                     panel.setMaximumSize(d);
                     pBaseDatos.add(panel);
                 }
+                if(_resultadosCorrectos){
+                    dibujarResulsadosFinales();
+                }
+                
             }
         }
         );
@@ -95,7 +101,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         pResult = new javax.swing.JPanel();
         jPanel5 = new javax.swing.JPanel();
         jPanel6 = new javax.swing.JPanel();
-        jButton1 = new javax.swing.JButton();
+        bCalcular = new javax.swing.JButton();
         jtResultado = new javax.swing.JTextField();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
@@ -106,7 +112,6 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         mArchivo = new javax.swing.JMenu();
         miAbrirBD = new javax.swing.JMenuItem();
         miSalir = new javax.swing.JMenuItem();
-        mEdicion = new javax.swing.JMenu();
         mAcercaDe = new javax.swing.JMenu();
         miAcercaDe = new javax.swing.JMenuItem();
 
@@ -123,6 +128,8 @@ public class VentanaPrincipal extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Sistemas Difusos - Mamdani");
+        setMinimumSize(new java.awt.Dimension(920, 577));
+        setPreferredSize(new java.awt.Dimension(940, 597));
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
                 formWindowClosing(evt);
@@ -178,11 +185,13 @@ public class VentanaPrincipal extends javax.swing.JFrame {
 
         Resultados.addTab("Base de Reglas", jScrollPane3);
 
+        pResultados.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+
         javax.swing.GroupLayout pResultLayout = new javax.swing.GroupLayout(pResult);
         pResult.setLayout(pResultLayout);
         pResultLayout.setHorizontalGroup(
             pResultLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 738, Short.MAX_VALUE)
+            .addGap(0, 589, Short.MAX_VALUE)
         );
         pResultLayout.setVerticalGroup(
             pResultLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -201,10 +210,11 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         jPanel6.setMaximumSize(new java.awt.Dimension(129, 32767));
         jPanel6.setMinimumSize(new java.awt.Dimension(129, 100));
 
-        jButton1.setText("Calcular");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        bCalcular.setText("Calcular");
+        bCalcular.setEnabled(false);
+        bCalcular.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                bCalcularActionPerformed(evt);
             }
         });
 
@@ -228,7 +238,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
             .addGroup(jPanel6Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(bCalcular, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jtResultado)
                     .addGroup(jPanel6Layout.createSequentialGroup()
                         .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -250,7 +260,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jcOperador, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 32, Short.MAX_VALUE)
-                .addComponent(jButton1)
+                .addComponent(bCalcular)
                 .addContainerGap())
         );
 
@@ -314,9 +324,6 @@ public class VentanaPrincipal extends javax.swing.JFrame {
 
         mbBarraMenu.add(mArchivo);
 
-        mEdicion.setText("Edición");
-        mbBarraMenu.add(mEdicion);
-
         mAcercaDe.setText("Ayuda");
 
         miAcercaDe.setText("Acerca de...");
@@ -352,10 +359,12 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void miAcercaDeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_miAcercaDeActionPerformed
-        
+        AcercaDe acerca = new AcercaDe(this, true);
+        acerca.setVisible(true);
     }//GEN-LAST:event_miAcercaDeActionPerformed
 
     private void miAbrirBDActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_miAbrirBDActionPerformed
+        boolean error = false;
         JFileChooser archivo = new JFileChooser();
         archivo.setFileSelectionMode(JFileChooser.FILES_ONLY);
         archivo.setMultiSelectionEnabled(true);
@@ -363,12 +372,12 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         
         if(seleccion == JFileChooser.APPROVE_OPTION){
             File[] fichero = archivo.getSelectedFiles();
-            if(fichero.length > 2 || fichero.length < 1){
-                System.out.println("No se ha seleccionado los archivos correctos");
+            if(fichero.length != 2){
+                JOptionPane.showMessageDialog(this, "No se ha seleccionado los archivos correctos. Se debe seleccionar el archivo de variables y reglas a la vez.", "Error",JOptionPane.ERROR_MESSAGE);
+                error = true;
             }else{
                 String ruta1 = fichero[0].getAbsolutePath();
                 String ruta2 = fichero[1].getAbsolutePath();
-                System.out.println(ruta1.substring(ruta1.length()-3, ruta1.length()));
                 if(ruta1.substring(ruta1.length()-3, ruta1.length()).equalsIgnoreCase("pwm")){
                     _rutaFicheroBD = ruta1;
                     _rutaFicheroReglas = ruta2;
@@ -376,44 +385,45 @@ public class VentanaPrincipal extends javax.swing.JFrame {
                     _rutaFicheroBD = ruta2;
                     _rutaFicheroReglas = ruta1;
                 }
-                
             }
-            
-            IOFicheros _ficheroBD = new IOFicheros(_rutaFicheroBD);
-            IOFicheros _ficheroReglas = new IOFicheros(_rutaFicheroReglas);
+            if(!error){
+                IOFicheros _ficheroBD = new IOFicheros(_rutaFicheroBD);
+                IOFicheros _ficheroReglas = new IOFicheros(_rutaFicheroReglas);
 
-            taLog.setText("Base de datos: Leida\n");
-            System.out.println("Base de datos");
-            _mamdani._baseDatos = _ficheroBD.leerBaseDatos();
-            for(int i = 0; i < _mamdani._baseDatos.size(); i++){
-                _mamdani._baseDatos.get(i).out();
-                System.out.println("\n******************************\n");
+                taLog.setText("Base de datos: Leida\n");
+                System.out.println("Base de datos");
+                _mamdani._baseDatos = _ficheroBD.leerBaseDatos();
+                for(int i = 0; i < _mamdani._baseDatos.size(); i++){
+                    _mamdani._baseDatos.get(i).out();
+                    System.out.println("\n******************************\n");
+                    taLog.append("Base de reglas: Leida\n");            
+                }
 
-           taLog.append("Base de reglas: Leida\n");            }
+                System.out.println("Base de reglas");
+                _mamdani._baseReglas = _ficheroReglas.leerReglas(_mamdani._baseDatos);
+                for(int i = 0; i < _mamdani._baseReglas.size(); i++){
+                    _mamdani._baseReglas.get(i).out();
+                    System.out.println("\n******************************\n");
+                }
 
-           System.out.println("Base de reglas");
-            _mamdani._baseReglas = _ficheroReglas.leerReglas(_mamdani._baseDatos);
-            for(int i = 0; i < _mamdani._baseReglas.size(); i++){
-                _mamdani._baseReglas.get(i).out();
-                System.out.println("\n******************************\n");
+                //Limpiarmos panle de variables
+                panelVariables.removeAll();
+                _listaVariablesEntrada.clear();
+
+                dibujarVariablesBD();
+
+                if(jcOperador.getSelectedIndex() == 0 || jcOperador.getSelectedIndex() == 2){
+                    dibujarReglas(true);
+                }else{
+                    dibujarReglas(false);
+                }
+
+
+                anadirCuadrosVariables();
+
+                bCalcular.setEnabled(true);
+                pBaseDatos.updateUI();
             }
-            
-            //Limpiarmos panle de variables
-            panelVariables.removeAll();
-            _listaVariablesEntrada.clear();
-            
-            dibujarVariablesBD();
-            
-            if(jcOperador.getSelectedIndex() == 0 || jcOperador.getSelectedIndex() == 2){
-                dibujarReglas(true);
-            }else{
-                dibujarReglas(false);
-            }
-            
-            
-            anadirCuadrosVariables();
-            
-            pBaseDatos.updateUI();
         }
     }//GEN-LAST:event_miAbrirBDActionPerformed
 
@@ -422,10 +432,10 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     }//GEN-LAST:event_miSalirActionPerformed
 
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
-        //confirmacionSalida();
+        confirmacionSalida();
     }//GEN-LAST:event_formWindowClosing
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+    private void bCalcularActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bCalcularActionPerformed
         //Captamos las variables
         _listaValoresEntradas.clear(); //Limpiamos la lista de valores
         boolean bandera = true;
@@ -464,8 +474,12 @@ public class VentanaPrincipal extends javax.swing.JFrame {
             Float resultado = _defusificacion.ejecutarDefusificacion();
             jtResultado.setText("");
             jtResultado.setText(resultado.toString());
+            
+            //Dibujamos los resultados
+            dibujarResulsadosFinales();
+            Resultados.setSelectedIndex(2);
         }
-    }//GEN-LAST:event_jButton1ActionPerformed
+    }//GEN-LAST:event_bCalcularActionPerformed
 
     private void jcOperadorItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jcOperadorItemStateChanged
         _operadorUtilizado = jcOperador.getSelectedIndex() + 1;
@@ -524,7 +538,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTabbedPane Resultados;
-    private javax.swing.JButton jButton1;
+    private javax.swing.JButton bCalcular;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel jPanel1;
@@ -542,7 +556,6 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     private javax.swing.JTextField jtResultado;
     private javax.swing.JMenu mAcercaDe;
     private javax.swing.JMenu mArchivo;
-    private javax.swing.JMenu mEdicion;
     private javax.swing.JMenuBar mbBarraMenu;
     private javax.swing.JMenuItem miAbrirBD;
     private javax.swing.JMenuItem miAcercaDe;
@@ -575,9 +588,11 @@ public class VentanaPrincipal extends javax.swing.JFrame {
             int j = 0;
             XYSeriesCollection dataset = new XYSeriesCollection();
             while(j < _mamdani._baseDatos.get(i).getNumeroTripletas()){
-                XYSeries serie = new XYSeries("Variable " + i + " | " + j);
-                List<Float> elementosTripleta = _mamdani._baseDatos.get(i).getSiguienteTripleta().leerElementosTripleta();
-
+                Tripleta t = _mamdani._baseDatos.get(i).getSiguienteTripleta();
+                List<Float> elementosTripleta = t.leerElementosTripleta();
+                XYSeries serie = new XYSeries(t.getNombreEtiqueta());
+                //List<Float> elementosTripleta = _mamdani._baseDatos.get(i).getSiguienteTripleta().leerElementosTripleta();
+                
                 if(elementosTripleta.size() == 3){
                     serie.add((double)elementosTripleta.get(0),0);
                     serie.add((double)elementosTripleta.get(1),1);
@@ -593,13 +608,8 @@ public class VentanaPrincipal extends javax.swing.JFrame {
             }
             //Guardamos los gráficos
             
-            if(i == _mamdani._baseDatos.size() - 1){
-                JFreeChart grafico = ChartFactory.createXYLineChart("Y ", "", "", dataset, PlotOrientation.VERTICAL, true, true, false);
-                _listaGraficosVariables.add(grafico);
-            }else{
-                JFreeChart grafico = ChartFactory.createXYLineChart("X " + (i + 1), "", "", dataset, PlotOrientation.VERTICAL, true, true, false);
-                _listaGraficosVariables.add(grafico);
-            }
+            JFreeChart grafico = ChartFactory.createXYLineChart(_mamdani._baseDatos.get(i).getNombreVariable(), "", "", dataset, PlotOrientation.VERTICAL, true, true, false);
+            _listaGraficosVariables.add(grafico);
             
             
             
@@ -607,7 +617,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         
         for(int i =0; i < _listaGraficosVariables.size();i++){
             ChartPanel panel = new ChartPanel(_listaGraficosVariables.get(i));
-            Dimension d = new Dimension(pBaseDatos.getWidth(),pBaseDatos.getHeight());
+            Dimension d = new Dimension(pBaseDatos.getWidth(),200);
             panel.setMaximumSize(d);
             pBaseDatos.add(panel);
         }
@@ -631,9 +641,14 @@ public class VentanaPrincipal extends javax.swing.JFrame {
             for(int j = 0; j < num; j++){
                 if(j == num -1){ //resultado de la regla
                     regla = regla.substring(0, regla.length()-4);
-                    regla = regla + " entonces Y es " + _mamdani._baseReglas.get(i).leerParteRegla(j).getNombreEtiqueta();
+                    regla = regla + " entonces " + _mamdani._baseDatos.get(j).getNombreVariable() + " es " + _mamdani._baseReglas.get(i).leerParteRegla(j).getNombreEtiqueta();
                 }else{ //Si de la regla
-                    regla = regla + "Si X"+ contador + " es " + _mamdani._baseReglas.get(i).leerParteRegla(j).getNombreEtiqueta() + valor;
+                    if(j == 0){
+                        regla = regla + "Si "+ _mamdani._baseDatos.get(j).getNombreVariable() + " es " + _mamdani._baseReglas.get(i).leerParteRegla(j).getNombreEtiqueta() + valor;
+                    }else{
+                        regla = regla + " "+ _mamdani._baseDatos.get(j).getNombreVariable() + " es " + _mamdani._baseReglas.get(i).leerParteRegla(j).getNombreEtiqueta() + valor;
+                    }
+                    
                 }
                 contador++;
             }
@@ -644,6 +659,8 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     
     
     private void dibujarResulsadosFinales(){
+        pResult.removeAll();
+        List<XYSeries> graficoFinal = new ArrayList<XYSeries>();
         
         for(int i = 0; i < _mamdani._baseReglas.size(); i++){
             Regla r = _mamdani._baseReglas.get(i);
@@ -653,28 +670,90 @@ public class VentanaPrincipal extends javax.swing.JFrame {
                 Tripleta t = r.leerParteRegla(j);
                 XYSeriesCollection dataset = new XYSeriesCollection();
                 XYSeries serie = new XYSeries("Regla " + i + " Tripleta " + j);
+                XYSeries relleno = new XYSeries("Regla" + i + "RELLENO");
                 List<Float> listaValores = t.leerElementosTripleta();
                 
-                if(listaValores.size() == 3){
+                //Escribimos figura original
+                if(listaValores.size() == 3){ //Es un triangulo
                     serie.add((double)listaValores.get(0),0);
                     serie.add((double)listaValores.get(1),1);
                     serie.add((double)listaValores.get(2),0);
-                }else{
+                }else{ //Es un trapecio
                     serie.add((double)listaValores.get(0),0);
                     serie.add((double)listaValores.get(1),1);
-                    serie.add((double)listaValores.get(2),0);
+                    serie.add((double)listaValores.get(2),1);
                     serie.add((double)listaValores.get(3),0);
                 }
                 
+                //Hallamos el relleno de la figura [ y*(b-a)+a = x ]
+                float grado;
+                if(j == r.numTripletasRegla() - 1){ //¿Es salida?
+                    grado = r.getAltura();
+                }else{
+                    grado = t.getGradoPertenencia();
+                }
+                
+                if(listaValores.size() == 3){ //Es un triangulo
+                    relleno.add((double)listaValores.get(0),0); //Inicio
+                    relleno.add((double)(grado * (listaValores.get(1) - listaValores.get(0)) + listaValores.get(0)),grado);
+                    relleno.add((double) (grado * (listaValores.get(1) - listaValores.get(2)) + listaValores.get(2)),grado);
+                    relleno.add((double)listaValores.get(2),0); //Fin
+                }else{ //Es un trapecio
+                    relleno.add((double)listaValores.get(0),0);
+                    relleno.add((double) (grado * (listaValores.get(1) - listaValores.get(0)) + listaValores.get(0)),grado);
+                    relleno.add((double) (grado * (listaValores.get(2) - listaValores.get(3)) + listaValores.get(3)),grado);
+                    relleno.add((double)listaValores.get(3),0);
+                }
+                
+                if(j == r.numTripletasRegla() - 1){
+                    //Guadamos la salida de cada regla para generar el gráfico final
+                    graficoFinal.add(relleno);
+                }
+                
                 dataset.addSeries(serie);
-                JFreeChart grafico = ChartFactory.createXYLineChart(" ", "", "", dataset, PlotOrientation.VERTICAL, false,false,false);
+                dataset.addSeries(relleno);
+                JFreeChart grafico = ChartFactory.createXYAreaChart("", "", "", dataset, PlotOrientation.VERTICAL, false,false,false);
                 listaGraficos.add(grafico);
             }
             
-            //Meter en un panel y agregarlo
+            //Agregamos los gráficos
+            JPanel panelFuera = new JPanel();
+            panelFuera.setLayout(new javax.swing.BoxLayout(panelFuera,javax.swing.BoxLayout.X_AXIS));
             
-            
+            for(int h = 0; h < listaGraficos.size(); h++){
+                ChartPanel panel = new ChartPanel(listaGraficos.get(h),pBaseDatos.getWidth()/listaGraficos.size(),200,pBaseDatos.getWidth()/listaGraficos.size(),200,pBaseDatos.getWidth()/listaGraficos.size(),200,true,true,true,true,true,true,true);
+                panelFuera.add(panel);
+            }
+            pResult.add(panelFuera);
         }
+        //Pintamos el resultado final
+        XYSeriesCollection datosFinales = new XYSeriesCollection();
+       
+        XYSeries s = new XYSeries("Resultado final");
+        s.add((double)Float.parseFloat(jtResultado.getText()) - 0.5,0);
+        s.add((double)Float.parseFloat(jtResultado.getText()) - 0.5,1);
+        s.add((double)Float.parseFloat(jtResultado.getText()) + 0.5,1);
+        s.add((double)Float.parseFloat(jtResultado.getText()) + 0.5,0);
+        datosFinales.addSeries(s);
+        
+        //Añadimos todas las series al dataset
+        for(int i = 0; i < graficoFinal.size(); i++){
+            datosFinales.addSeries(graficoFinal.get(i));
+        }
+        
+        JFreeChart grafico = ChartFactory.createXYAreaChart("Resultado final", "", "", datosFinales, PlotOrientation.VERTICAL, false,false,false);
+        XYPlot plot = grafico.getXYPlot();
+        XYItemRenderer render = plot.getRenderer();
+        plot.setForegroundAlpha(1);
+        for(int i = 1; i <= graficoFinal.size(); i++){
+            render.setSeriesPaint(i, Color.BLUE);   
+        }
+        render.setSeriesPaint(0, Color.RED);
+        
+        ChartPanel panelFinal = new ChartPanel(grafico,pBaseDatos.getWidth(),200,pBaseDatos.getWidth(),200,pBaseDatos.getWidth(),200,true,true,true,true,true,true,true);
+        pResult.add(panelFinal);
+        pResult.validate();
+        pResult.repaint();
     }
     
     /**

@@ -38,6 +38,10 @@ public class Operador {
     }
     
     public static float TconormaSUMALG(List <Float> valores){
-        return 0; //a + b - a * b;
+        float aux = valores.get(0);
+        for(int i = 1; i < valores.size(); i++){
+            aux = aux + valores.get(i) - aux * valores.get(i);
+        }
+        return aux;
     }
 }

@@ -16,6 +16,7 @@ public class Variable {
     int _iterador;
     private float _rangoInferior;
     private float _rangoSuperior;
+    private String _nombreVariable;
     
     //****************************** MÉTODOS
 
@@ -26,6 +27,7 @@ public class Variable {
         
         _rangoInferior = 0;
         _rangoSuperior = 0;
+        _nombreVariable = "";
     }
     
     public void anadirTripleta(Tripleta t){
@@ -63,6 +65,15 @@ public class Variable {
     public float getRangoSuperior(){
         return _listaTripletas.get(_listaTripletas.size()-1).getRangoSuperior();
     }
+    
+    public void setNombreVariable(String nombre){
+        _nombreVariable = nombre;
+    }
+    
+    public String getNombreVariable(){
+        return _nombreVariable;
+    }
+    
     
     public void out(){
         for(int i = 0; i < _listaTripletas.size(); i++){

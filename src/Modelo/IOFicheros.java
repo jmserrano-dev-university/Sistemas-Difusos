@@ -45,9 +45,12 @@ public class IOFicheros {
         
         while(_sc.hasNext()){
             _sc.nextLine(); //Línea vacía    
-            _sc.nextLine(); //Variable ...
+            //_sc.nextLine(); //Variable ...
+            String nombreVar = _sc.nextLine();
+            nombreVar = nombreVar.substring(nombreVar.indexOf("V") + 9, nombreVar.indexOf(":"));
             
             Variable v = new Variable();
+            v.setNombreVariable(nombreVar);
             
            while(_sc.hasNext("Etiqueta")){
                String token = _sc.nextLine();
