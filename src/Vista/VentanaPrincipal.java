@@ -488,21 +488,21 @@ public class VentanaPrincipal extends javax.swing.JFrame {
             Resultados.setSelectedIndex(2);
             
             //Informamos en el Log de las reglas disparadas
-            taLog.append("\n*************************************\n");
+            taLog.append("\n******************************************\n");
             for(int i = 0; i < _mamdani._baseReglas.size(); i++){
                 if(_mamdani._baseReglas.get(i).getPertenencia()){
-                    taLog.append("-REGLA " + (i+1) + ": disparada\n");
+                    taLog.append("-REGLA " + (i+1) + ": disparada con grado " + _mamdani._baseReglas.get(i).getAltura() + "\n");
                 }else{
                     taLog.append("-REGLA " + (i+1) + ": NO disparada\n");
                 }
             }
-            taLog.append("*************************************\n");
+            taLog.append("******************************************\n");
         }
     }//GEN-LAST:event_bCalcularActionPerformed
 
     private void jcOperadorItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jcOperadorItemStateChanged
         _operadorUtilizado = jcOperador.getSelectedIndex() + 1;
-        if(jcOperador.getSelectedIndex() == Operador.TNORMAMIN || jcOperador.getSelectedIndex() == Operador.TNORMAPROD){
+        if(_operadorUtilizado == Operador.TNORMAMIN || _operadorUtilizado == Operador.TNORMAPROD){
             dibujarReglas(true);
         }else{
             dibujarReglas(false);
